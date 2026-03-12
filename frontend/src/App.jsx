@@ -25,7 +25,7 @@ export default function App() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repo: selectedRepo, max_issues: 50 }),
+        body: JSON.stringify({ repo: selectedRepo, max_issues: 30 }),
       })
       if (!res.ok) {
         const data = await res.json()
@@ -119,7 +119,7 @@ export default function App() {
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Analyzing {repo}...</span>
                   </div>
                   <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Fetching issues from GitHub and classifying each one with AI — this can take 30–60 seconds.
+                    Fetching issues from GitHub and classifying each one with AI — usually takes 10–20 seconds.
                   </p>
                 </div>
               )}

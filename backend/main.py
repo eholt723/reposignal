@@ -35,7 +35,7 @@ app.add_middleware(
 
 
 @app.post("/api/analyze", response_model=AnalyzeResponse)
-def analyze(req: AnalyzeRequest):
+async def analyze(req: AnalyzeRequest):
     # Validate repo format
     parts = req.repo.strip().split("/")
     if len(parts) != 2 or not all(parts):
@@ -50,18 +50,25 @@ def analyze(req: AnalyzeRequest):
     if not issues:
         raise HTTPException(status_code=404, detail="No issues found for this repository")
 
-    # Create analysis run
+    # Create analysis run and insert all issues first
     run_id = create_run(req.repo)
+    issue_records = [(insert_issue(run_id, issue), issue) for issue in issues]
 
-    # Classify and persist each issue
-    for issue in issues:
-        issue_id = insert_issue(run_id, issue)
-        try:
-            clf = classify_issue(issue["title"], issue.get("body", ""))
-            insert_classification(issue_id, clf)
-        except Exception:
-            # Don't fail the whole run if one classification errors
-            pass
+    # Classify concurrently, max 15 at a time to stay under Groq rate limits
+    semaphore = asyncio.Semaphore(15)
+    loop = asyncio.get_event_loop()
+
+    async def classify_and_store(issue_id, issue):
+        async with semaphore:
+            try:
+                clf = await loop.run_in_executor(
+                    None, classify_issue, issue["title"], issue.get("body", "")
+                )
+                insert_classification(issue_id, clf)
+            except Exception:
+                pass
+
+    await asyncio.gather(*[classify_and_store(iid, iss) for iid, iss in issue_records])
 
     update_run_count(run_id, len(issues))
 
