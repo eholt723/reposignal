@@ -107,8 +107,11 @@ async def draft(issue_id: int):
             issue_type=issue.get("issue_type") or "other",
             priority=issue.get("priority") or "medium",
         )
-        for chunk in gen:
-            yield {"data": json.dumps({"chunk": chunk})}
+        try:
+            for chunk in gen:
+                yield {"data": json.dumps({"chunk": chunk})}
+        except Exception as e:
+            yield {"data": json.dumps({"error": str(e)})}
         yield {"data": json.dumps({"done": True})}
 
     return EventSourceResponse(event_generator())

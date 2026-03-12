@@ -34,6 +34,7 @@ export default function DraftPanel({ issue, onClose }) {
               try {
                 const payload = JSON.parse(line.slice(6))
                 if (payload.chunk) setText(t => t + payload.chunk)
+                if (payload.error) { setError(payload.error); setStreaming(false) }
                 if (payload.done) { setStreaming(false); setDone(true) }
               } catch {}
             }
@@ -108,6 +109,9 @@ export default function DraftPanel({ issue, onClose }) {
             </p>
             {!text && streaming && (
               <p className="text-sm text-gray-400 dark:text-gray-500 animate-pulse">Drafting response…</p>
+            )}
+            {!text && !streaming && done && (
+              <p className="text-sm text-gray-400 dark:text-gray-500">No response generated. Try selecting another issue.</p>
             )}
             <div ref={bottomRef} />
           </>
