@@ -204,7 +204,7 @@ def get_repo_history() -> list[dict]:
                 SELECT id AS run_id, repo, analyzed_at, issue_count
                 FROM analysis_runs
                 ORDER BY analyzed_at DESC
-                LIMIT 20
+                LIMIT 5
             """)
             return [dict(r) for r in cur.fetchall()]
 
