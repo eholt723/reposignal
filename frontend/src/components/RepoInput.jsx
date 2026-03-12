@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 const PRESETS = ['fastapi/fastapi', 'microsoft/vscode', 'vercel/next.js', 'golang/go', 'home-assistant/core']
 
-export default function RepoInput({ onAnalyze, onSelectHistory, onReset, hasResult, analyzing, error }) {
+export default function RepoInput({ onAnalyze, onSelectHistory, onReset, hasResult, analyzing, error, hideHistory }) {
   const [value, setValue] = useState('')
   const [history, setHistory] = useState([])
 
@@ -74,7 +74,7 @@ export default function RepoInput({ onAnalyze, onSelectHistory, onReset, hasResu
       </div>
 
       {/* Repo history */}
-      {history.length > 0 && (
+      {!hideHistory && history.length > 0 && (
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
           <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Previously Analyzed</h2>
           <div className="space-y-1">

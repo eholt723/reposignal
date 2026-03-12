@@ -7,7 +7,7 @@ import TopLabelsChart from './Charts/TopLabelsChart'
 import IssueList from './IssueList'
 import DraftPanel from './DraftPanel'
 
-export default function Dashboard({ runId, repo }) {
+export default function Dashboard({ runId, repo, isPreloaded }) {
   const [data, setData] = useState(null)
   const [issues, setIssues] = useState([])
   const [loading, setLoading] = useState(true)
@@ -64,7 +64,7 @@ export default function Dashboard({ runId, repo }) {
         <StatCard label="Total Issues" value={data.total_issues} />
         <StatCard label="Open" value={data.open_count} accent />
         <StatCard label="Closed" value={data.closed_count} />
-        <StatCard label="Repo" value={repo} small />
+        <StatCard label="Repo" value={repo} small badge={isPreloaded ? 'Example analysis' : null} />
       </div>
 
       {/* Charts row 1 */}
@@ -80,8 +80,13 @@ export default function Dashboard({ runId, repo }) {
       </div>
 
       {/* Time series full width */}
-      {data.issues_over_time.length > 1 && (
+      {data.issues_over_time.length > 1 ? (
         <TimeSeriesChart data={data.issues_over_time} />
+      ) : (
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Issues Over Time (weekly)</h3>
+          <p className="text-xs text-gray-400 dark:text-gray-500">Not enough time range in this sample to plot a weekly trend — all issues fall within the same week.</p>
+        </div>
       )}
 
       {/* Issue list + draft panel */}
@@ -97,13 +102,18 @@ export default function Dashboard({ runId, repo }) {
   )
 }
 
-function StatCard({ label, value, accent, small }) {
+function StatCard({ label, value, accent, small, badge }) {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
       <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">{label}</p>
       <p className={`font-bold truncate ${small ? 'text-sm text-gray-700 dark:text-gray-300' : 'text-2xl'} ${accent ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-900 dark:text-gray-100'}`}>
         {value}
       </p>
+      {badge && (
+        <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700">
+          {badge}
+        </span>
+      )}
     </div>
   )
 }

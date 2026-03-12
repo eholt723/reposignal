@@ -10,17 +10,33 @@ export default function App() {
   const [repo, setRepo] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
   const [error, setError] = useState('')
+  const [isPreloaded, setIsPreloaded] = useState(false)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
     localStorage.setItem('theme', dark ? 'dark' : 'light')
   }, [dark])
 
+  // Auto-load a seeded run on first visit so the dashboard is never a blank slate
+  useEffect(() => {
+    fetch('/api/repos')
+      .then(r => r.json())
+      .then(history => {
+        if (history.length > 0) {
+          setRunId(history[0].run_id)
+          setRepo(history[0].repo)
+          setIsPreloaded(true)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
   async function handleAnalyze(selectedRepo) {
     setError('')
     setRunId(null)
     setRepo(selectedRepo)
     setAnalyzing(true)
+    setIsPreloaded(false)
     try {
       const res = await fetch('/api/analyze', {
         method: 'POST',
@@ -44,6 +60,7 @@ export default function App() {
     setRunId(histRunId)
     setRepo(histRepo)
     setError('')
+    setIsPreloaded(false)
   }
 
   function handleReset() {
@@ -108,6 +125,7 @@ export default function App() {
                 hasResult={!!runId}
                 analyzing={analyzing}
                 error={error}
+                hideHistory={!!runId}
               />
               {analyzing && (
                 <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 text-center">
@@ -123,7 +141,7 @@ export default function App() {
                   </p>
                 </div>
               )}
-              {runId && !analyzing && <Dashboard runId={runId} repo={repo} />}
+              {runId && !analyzing && <Dashboard runId={runId} repo={repo} isPreloaded={isPreloaded} />}
             </main>
           }
         />
