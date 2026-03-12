@@ -24,7 +24,7 @@ const TYPE_LABELS = {
 
 const ALL = 'all'
 
-export default function IssueList({ issues }) {
+export default function IssueList({ issues, onSelectIssue, selectedIssueId }) {
   const [typeFilter, setTypeFilter] = useState(ALL)
   const [priorityFilter, setPriorityFilter] = useState(ALL)
   const [stateFilter, setStateFilter] = useState(ALL)
@@ -74,7 +74,12 @@ export default function IssueList({ issues }) {
           filtered.map(issue => (
             <div
               key={issue.id}
-              className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              onClick={() => onSelectIssue && onSelectIssue(issue)}
+              className={`flex items-start gap-3 p-3 rounded-lg border transition-colors cursor-pointer
+                ${selectedIssueId === issue.id
+                  ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-950'
+                  : 'border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
+                }`}
             >
               {/* Type badge */}
               <span className={`mt-0.5 shrink-0 text-xs px-2 py-0.5 rounded border font-medium ${TYPE_COLORS[issue.issue_type] || TYPE_COLORS.other}`}>
@@ -91,7 +96,7 @@ export default function IssueList({ issues }) {
                 )}
               </div>
 
-              {/* Priority + state */}
+              {/* Priority + state + draft hint */}
               <div className="shrink-0 flex flex-col items-end gap-1">
                 {issue.priority && (
                   <span className={`text-xs font-medium ${PRIORITY_COLORS[issue.priority] || 'text-gray-400'}`}>
@@ -101,6 +106,11 @@ export default function IssueList({ issues }) {
                 <span className={`text-xs ${issue.state === 'open' ? 'text-cyan-500' : 'text-gray-400 dark:text-gray-500'}`}>
                   {issue.state}
                 </span>
+                {issue.state === 'open' && selectedIssueId !== issue.id && (
+                  <span className="text-xs text-gray-300 dark:text-gray-600 group-hover:text-cyan-500 transition-colors">
+                    draft reply
+                  </span>
+                )}
               </div>
             </div>
           ))

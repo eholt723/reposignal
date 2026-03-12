@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom'
 import RepoInput from './components/RepoInput'
 import Dashboard from './components/Dashboard'
+import About from './components/About'
 
 export default function App() {
   const [dark, setDark] = useState(() => localStorage.getItem('theme') !== 'light')
@@ -104,7 +105,7 @@ export default function App() {
             </main>
           }
         />
-        <Route path="/about" element={<div className="max-w-3xl mx-auto px-4 py-12 text-gray-400 dark:text-gray-500 text-sm">About page coming in Phase 3.</div>} />
+        <Route path="/about" element={<About />} />
       </Routes>
 
       <footer className="fixed bottom-4 right-5 text-xs text-gray-400 dark:text-gray-600 text-right leading-tight">

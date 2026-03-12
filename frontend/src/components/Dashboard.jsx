@@ -5,18 +5,21 @@ import TimeSeriesChart from './Charts/TimeSeriesChart'
 import OpenClosedChart from './Charts/OpenClosedChart'
 import TopLabelsChart from './Charts/TopLabelsChart'
 import IssueList from './IssueList'
+import DraftPanel from './DraftPanel'
 
 export default function Dashboard({ runId, repo }) {
   const [data, setData] = useState(null)
   const [issues, setIssues] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [selectedIssue, setSelectedIssue] = useState(null)
 
   useEffect(() => {
     setLoading(true)
     setError('')
     setData(null)
     setIssues([])
+    setSelectedIssue(null)
 
     Promise.all([
       fetch(`/api/dashboard/${runId}`).then(r => {
@@ -81,8 +84,15 @@ export default function Dashboard({ runId, repo }) {
         <TimeSeriesChart data={data.issues_over_time} />
       )}
 
-      {/* Issue list */}
-      <IssueList issues={issues} />
+      {/* Issue list + draft panel */}
+      <IssueList
+        issues={issues}
+        onSelectIssue={issue => setSelectedIssue(prev => prev?.id === issue.id ? null : issue)}
+        selectedIssueId={selectedIssue?.id}
+      />
+      {selectedIssue && (
+        <DraftPanel issue={selectedIssue} onClose={() => setSelectedIssue(null)} />
+      )}
     </div>
   )
 }
