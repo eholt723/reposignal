@@ -26,7 +26,7 @@ def classify_issue(title: str, body: str) -> dict:
     user_content = f"Title: {title}\n\nBody: {truncated_body}"
 
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="llama-3.3-70b-versatile",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_content},
@@ -87,7 +87,7 @@ Write a response that:
 - Is 3-5 sentences max"""
 
     stream = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
         max_tokens=300,

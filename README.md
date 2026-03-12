@@ -20,7 +20,7 @@ GitHub REST API → classify (Groq) → persist (PostgreSQL) → dashboard (SQL 
 
 | Layer | Responsibility |
 |---|---|
-| GitHub client | Fetches up to 30 issues per repo (no auth required for public repos) |
+| GitHub client | Fetches up to 50 issues per repo (no auth required for public repos) |
 | Classifier | Groq LLM assigns type, priority, sentiment, and one-line summary to each issue |
 | Database | PostgreSQL stores issues + classifications; SQL queries power all dashboard metrics |
 | Dashboard | SQL-aggregated charts: volume by type, priority distribution, open/closed ratio, time series, top labels |
@@ -30,7 +30,7 @@ GitHub REST API → classify (Groq) → persist (PostgreSQL) → dashboard (SQL 
 
 - **Frontend** — React + Vite + Tailwind CSS + Recharts
 - **Backend** — Python + FastAPI with SSE streaming
-- **LLM** — Groq (`llama-3.1-8b-instant`)
+- **LLM** — Groq (`llama-3.3-70b-versatile`)
 - **Database** — PostgreSQL (Neon) with raw SQL aggregation queries
 - **Deploy** — Hugging Face Spaces (Docker)
 

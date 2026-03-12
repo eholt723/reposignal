@@ -25,7 +25,7 @@ export default function App() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repo: selectedRepo, max_issues: 30 }),
+        body: JSON.stringify({ repo: selectedRepo, max_issues: 50 }),
       })
       if (!res.ok) {
         const data = await res.json()
