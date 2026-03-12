@@ -27,16 +27,19 @@ export default function DraftPanel({ issue, onClose }) {
           reader.read().then(({ value, done: readerDone }) => {
             if (readerDone) { setStreaming(false); setDone(true); return }
             buffer += decoder.decode(value, { stream: true })
-            const lines = buffer.split('\n\n')
-            buffer = lines.pop()
-            for (const line of lines) {
-              if (!line.startsWith('data: ')) continue
-              try {
-                const payload = JSON.parse(line.slice(6))
-                if (payload.chunk) setText(t => t + payload.chunk)
-                if (payload.error) { setError(payload.error); setStreaming(false) }
-                if (payload.done) { setStreaming(false); setDone(true) }
-              } catch {}
+            const normalized = buffer.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+            const events = normalized.split('\n\n')
+            buffer = events.pop()
+            for (const event of events) {
+              for (const line of event.split('\n')) {
+                if (!line.startsWith('data: ')) continue
+                try {
+                  const payload = JSON.parse(line.slice(6))
+                  if (payload.chunk) setText(t => t + payload.chunk)
+                  if (payload.error) { setError(payload.error); setStreaming(false) }
+                  if (payload.done) { setStreaming(false); setDone(true) }
+                } catch {}
+              }
             }
             pump()
           }).catch(() => { setStreaming(false) })
