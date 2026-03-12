@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 const PRESETS = ['fastapi/fastapi', 'microsoft/vscode', 'vercel/next.js']
 
-export default function RepoInput({ onAnalyze, onSelectHistory, analyzing, error }) {
+export default function RepoInput({ onAnalyze, onSelectHistory, onReset, hasResult, analyzing, error }) {
   const [value, setValue] = useState('')
   const [history, setHistory] = useState([])
 
@@ -29,7 +29,7 @@ export default function RepoInput({ onAnalyze, onSelectHistory, analyzing, error
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="owner/repo"
+            placeholder="e.g. fastapi/fastapi"
             value={value}
             onChange={e => setValue(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && submit()}
@@ -41,8 +41,16 @@ export default function RepoInput({ onAnalyze, onSelectHistory, analyzing, error
             disabled={analyzing || !value.trim()}
             className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors"
           >
-            {analyzing ? 'Analyzing…' : 'Analyze'}
+            Analyze
           </button>
+          {hasResult && !analyzing && (
+            <button
+              onClick={onReset}
+              className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium transition-colors"
+            >
+              Reset
+            </button>
+          )}
         </div>
 
         {/* Preset buttons */}

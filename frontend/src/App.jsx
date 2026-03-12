@@ -25,7 +25,7 @@ export default function App() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repo: selectedRepo, max_issues: 100 }),
+        body: JSON.stringify({ repo: selectedRepo, max_issues: 50 }),
       })
       if (!res.ok) {
         const data = await res.json()
@@ -43,6 +43,12 @@ export default function App() {
   function handleSelectHistory(histRunId, histRepo) {
     setRunId(histRunId)
     setRepo(histRepo)
+    setError('')
+  }
+
+  function handleReset() {
+    setRunId(null)
+    setRepo('')
     setError('')
   }
 
@@ -98,10 +104,26 @@ export default function App() {
               <RepoInput
                 onAnalyze={handleAnalyze}
                 onSelectHistory={handleSelectHistory}
+                onReset={handleReset}
+                hasResult={!!runId}
                 analyzing={analyzing}
                 error={error}
               />
-              {runId && <Dashboard runId={runId} repo={repo} />}
+              {analyzing && (
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 text-center">
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <svg className="animate-spin w-5 h-5 text-cyan-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Analyzing {repo}...</span>
+                  </div>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    Fetching issues from GitHub and classifying each one with AI — this can take 30–60 seconds.
+                  </p>
+                </div>
+              )}
+              {runId && !analyzing && <Dashboard runId={runId} repo={repo} />}
             </main>
           }
         />
