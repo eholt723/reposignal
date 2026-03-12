@@ -8,14 +8,14 @@ from fastapi.responses import FileResponse
 from sse_starlette.sse import EventSourceResponse
 import os
 
-from models import AnalyzeRequest, AnalyzeResponse, DashboardResponse, RepoHistoryItem, IssueSummary
-from database import (
+from .models import AnalyzeRequest, AnalyzeResponse, DashboardResponse, RepoHistoryItem, IssueSummary
+from .database import (
     init_db, create_run, insert_issue, insert_classification,
     update_run_count, get_dashboard, get_repo_history,
     get_issues_for_run, get_issue_by_id,
 )
-from github_client import fetch_issues
-from classifier import classify_issue, stream_draft_response
+from .github_client import fetch_issues
+from .classifier import classify_issue, stream_draft_response
 
 
 @asynccontextmanager
