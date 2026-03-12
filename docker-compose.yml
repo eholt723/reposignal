@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: reposignal
+      POSTGRES_PASSWORD: reposignal
+      POSTGRES_DB: reposignal
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://reposignal:reposignal@db:5432/reposignal
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
