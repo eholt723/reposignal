@@ -30,9 +30,9 @@ GitHub REST API → classify (Groq) → persist (PostgreSQL) → dashboard (SQL 
 
 - **Frontend** — React + Vite + Tailwind CSS + Recharts
 - **Backend** — Python + FastAPI with SSE streaming
-- **LLM** — Groq (`llama-3.3-70b-versatile`)
+- **LLM** — Groq (`llama-3.1-8b-instant`)
 - **Database** — PostgreSQL (Neon) with raw SQL aggregation queries
-- **Deploy** — Hugging Face Spaces (Docker) + GitHub Actions CD
+- **Deploy** — Hugging Face Spaces (Docker)
 
 ## Features
 
@@ -122,16 +122,14 @@ reposignal/
 │       └── test_lifecycle.py    # Full lifecycle: analyze → dashboard → draft
 ├── pyproject.toml           # Project metadata + pytest config
 ├── Dockerfile               # Multi-stage: Vite build + FastAPI serve
-├── docker-compose.yml       # Local dev: app + postgres
-└── .github/workflows/deploy.yml  # CD to Hugging Face Spaces
+└── docker-compose.yml       # Local dev: app + postgres
 ```
 
 ## Deployment
 
-Deploys automatically to Hugging Face Spaces on push to `main`. Requires these GitHub secrets:
+Deployed to Hugging Face Spaces via Docker. Push to the `space` remote to deploy:
 
-- `HF_TOKEN` — Hugging Face write token
-- `GROQ_API_KEY`
-- `DATABASE_URL`
-
-Update the HF Space URL in [.github/workflows/deploy.yml](.github/workflows/deploy.yml) before first deploy.
+```bash
+git remote add space https://huggingface.co/spaces/eholt723/RepoSignal
+git push space main
+```
