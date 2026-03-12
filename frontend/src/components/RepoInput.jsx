@@ -29,7 +29,7 @@ export default function RepoInput({ onAnalyze, onSelectHistory, onReset, hasResu
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="e.g. fastapi/fastapi"
+            placeholder="e.g. eholt723/reposignal"
             value={value}
             onChange={e => setValue(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && submit()}

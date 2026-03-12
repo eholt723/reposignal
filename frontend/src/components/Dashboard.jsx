@@ -91,7 +91,7 @@ export default function Dashboard({ runId, repo }) {
         selectedIssueId={selectedIssue?.id}
       />
       {selectedIssue && (
-        <DraftPanel issue={selectedIssue} onClose={() => setSelectedIssue(null)} />
+        <DraftPanel issue={selectedIssue} repo={repo} onClose={() => setSelectedIssue(null)} />
       )}
     </div>
   )

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 
-export default function DraftPanel({ issue, onClose }) {
+export default function DraftPanel({ issue, repo, onClose }) {
   const [text, setText] = useState('')
   const [streaming, setStreaming] = useState(false)
   const [done, setDone] = useState(false)
@@ -87,6 +87,16 @@ export default function DraftPanel({ issue, onClose }) {
             )}
           </div>
         </div>
+        {repo && issue.number && (
+          <a
+            href={`https://github.com/${repo}/issues/${issue.number}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            View Issue
+          </a>
+        )}
         <button
           onClick={onClose}
           className="shrink-0 p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-400 dark:text-gray-500"
