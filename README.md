@@ -16,25 +16,59 @@ AI-powered GitHub Issues analytics dashboard. Enter any public GitHub repository
 ## Architecture
 
 ```
-GitHub REST API → classify (Groq) → persist (PostgreSQL) → dashboard (SQL aggregations)
-                                                          → draft response (SSE stream)
+┌──────────────────────────────┐
+│       React Frontend         │
+│  Vite · Tailwind · Recharts  │
+└──────────────┬───────────────┘
+               │  REST  /api/*
+               │  SSE   /api/draft/{id}
+               ▼
+┌──────────────────────────────────────────┐
+│            FastAPI Backend               │
+│                                          │
+│  POST /api/analyze  ─── fetch + classify │
+│  GET  /api/dashboard/{id} ─── SQL aggs   │
+│  GET  /api/repos    ─── run history      │
+│  POST /api/draft/{id} ─── SSE stream     │
+└────────┬─────────────────────┬───────────┘
+         │                     │
+         ▼                     ▼
+┌─────────────────┐   ┌─────────────────────┐
+│  GitHub REST    │   │     Groq LLM        │
+│  API            │   │  llama-3.3-70b      │
+│  (fetch issues) │   │  (classify + draft) │
+└────────┬────────┘   └──────────┬──────────┘
+         │                       │
+         └───────────┬───────────┘
+                     ▼
+           ┌──────────────────┐
+           │   PostgreSQL     │
+           │   Neon serverless│
+           │   raw SQL + JOIN │
+           └──────────────────┘
 ```
 
 | Layer | Responsibility |
 |---|---|
-| GitHub client | Fetches up to 50 issues per repo (no auth required for public repos) |
-| Classifier | Groq LLM assigns type, priority, sentiment, and one-line summary to each issue |
-| Database | PostgreSQL stores issues + classifications; SQL queries power all dashboard metrics |
-| Dashboard | SQL-aggregated charts: volume by type, priority distribution, open/closed ratio, time series, top labels |
-| Draft panel | SSE-streamed AI triage response for any selected open issue |
+| React frontend | Repo input, preset buttons, run history, dashboard charts, issue table, SSE-streamed draft panel |
+| FastAPI backend | Route definitions, request validation, orchestrates fetch → classify → persist pipeline |
+| GitHub client | Fetches up to 50 issues per repo via REST API; normalizes fields, filters PRs |
+| Classifier | Sends each issue to Groq LLM; parses type, priority, sentiment, summary; parallelized with concurrency cap |
+| Database | psycopg2 raw SQL — persists runs, issues, classifications; powers all aggregation queries |
+| Draft panel | Streams an AI triage response word-by-word to the frontend via SSE |
+| Migrations | Alembic tracks schema versions; migrations applied manually before deploy |
 
 ## Tech Stack
 
-- **Frontend** — React + Vite + Tailwind CSS + Recharts
-- **Backend** — Python + FastAPI with SSE streaming
-- **LLM** — Groq (`llama-3.3-70b-versatile`)
-- **Database** — PostgreSQL (Neon) with raw SQL aggregation queries
-- **Deploy** — Hugging Face Spaces (Docker)
+| Layer | Technology |
+|---|---|
+| Backend | Python 3.12, FastAPI 0.115.5, Uvicorn 0.32.1 |
+| Frontend | React 18, Vite 6, Tailwind CSS 3, Recharts 2, React Router 6 |
+| LLM | Groq API — `llama-3.3-70b-versatile` (classify + draft) |
+| Database | PostgreSQL via Neon serverless — raw SQL with psycopg2 2.9.10 |
+| Real-time | Server-Sent Events via sse-starlette 2.1.3 |
+| Migrations | Alembic 1.14.1 with SQLAlchemy 2.0 engine |
+| Hosting | Hugging Face Spaces — multi-stage Docker (Node 20 build → Python 3.12 serve) |
 
 ## Features
 
@@ -100,32 +134,64 @@ pytest tests/integration/ -v
 ```
 reposignal/
 ├── backend/
-│   ├── main.py              # FastAPI app, route definitions
-│   ├── github_client.py     # GitHub REST API fetching logic
-│   ├── classifier.py        # Groq classification pipeline
-│   ├── database.py          # PostgreSQL connection, schema, SQL query functions
-│   └── models.py            # Pydantic schemas
+│   ├── main.py              # FastAPI app and all route definitions
+│   ├── github_client.py     # GitHub REST API fetch, normalize, PR filter
+│   ├── classifier.py        # Groq LLM classification pipeline (parallelized)
+│   ├── database.py          # psycopg2 connection, SQL query functions
+│   ├── models.py            # Pydantic request/response schemas
+│   └── requirements.txt
 ├── frontend/
 │   └── src/
-│       ├── App.jsx
+│       ├── App.jsx                      # Router, layout, nav
 │       └── components/
-│           ├── RepoInput.jsx        # Repo input + preset buttons + history
-│           ├── Dashboard.jsx        # Main analytics view
-│           ├── Charts/              # Individual Recharts components
-│           ├── IssueList.jsx        # Filterable issue table
-│           ├── DraftPanel.jsx       # SSE-streamed triage draft
-│           └── About.jsx            # Employer-facing showcase page
+│           ├── RepoInput.jsx            # Repo input + preset buttons + run history
+│           ├── Dashboard.jsx            # Main analytics view
+│           ├── Charts/
+│           │   ├── IssueTypeChart.jsx   # Bar chart — volume by type
+│           │   ├── PriorityChart.jsx    # Pie chart — priority distribution
+│           │   ├── OpenClosedChart.jsx  # Open vs closed ratio
+│           │   ├── TimeSeriesChart.jsx  # Issues over time (weekly)
+│           │   └── TopLabelsChart.jsx   # Top labels by frequency
+│           ├── IssueList.jsx            # Filterable issue table
+│           ├── DraftPanel.jsx           # SSE-streamed triage response
+│           └── About.jsx                # Employer-facing showcase page
+├── migrations/
+│   ├── env.py               # Alembic runtime config — reads DATABASE_URL from env
+│   └── versions/
+│       ├── 0001_initial_schema.py      # Baseline: analysis_runs, issues, classifications
+│       └── 0002_add_repo_description.py  # Adds repo_description column
 ├── tests/
 │   ├── unit/
-│   │   ├── test_classifier.py   # _validate, classify_issue, stream (mocked Groq)
-│   │   ├── test_github_client.py  # _normalize, fetch_issues (mocked httpx)
-│   │   └── test_routes.py       # All API routes via FastAPI TestClient
+│   │   ├── test_classifier.py      # _validate, classify_issue, stream (mocked Groq)
+│   │   ├── test_github_client.py   # _normalize, fetch_issues (mocked httpx)
+│   │   └── test_routes.py          # All 9 API routes via FastAPI TestClient
 │   └── integration/
-│       └── test_lifecycle.py    # Full lifecycle: analyze → dashboard → draft
+│       └── test_lifecycle.py       # Full analyze → dashboard → issues → draft lifecycle
+├── alembic.ini              # Alembic config — URL injected at runtime, not hardcoded
 ├── pyproject.toml           # Project metadata + pytest config
-├── Dockerfile               # Multi-stage: Vite build + FastAPI serve
+├── Dockerfile               # Multi-stage: Node 20 Vite build → Python 3.12 serve
 └── docker-compose.yml       # Local dev: app + postgres
 ```
+
+## Migrations
+
+Database schema is managed by [Alembic](https://alembic.sqlalchemy.org/). Migration files live in `migrations/versions/` and are committed to the repo.
+
+**Apply all pending migrations** (run from the project root):
+
+```bash
+alembic upgrade head
+```
+
+**Create a new migration** after changing the schema:
+
+```bash
+alembic revision -m "describe the change"
+```
+
+Then write the SQL changes in the generated file's `upgrade()` / `downgrade()` functions using `op.execute()`. This project uses raw psycopg2 rather than SQLAlchemy ORM, so `--autogenerate` is not available — migrations must be written manually.
+
+> Always review the generated migration file before running it against any database. Never run `alembic upgrade head` blindly against production.
 
 ## Deployment
 

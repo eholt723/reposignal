@@ -15,45 +15,9 @@ def get_conn():
 
 
 def init_db():
-    with get_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS analysis_runs (
-                    id          SERIAL PRIMARY KEY,
-                    repo        TEXT NOT NULL,
-                    analyzed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                    issue_count INT NOT NULL DEFAULT 0
-                )
-            """)
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS issues (
-                    id          SERIAL PRIMARY KEY,
-                    run_id      INT NOT NULL REFERENCES analysis_runs(id) ON DELETE CASCADE,
-                    github_id   BIGINT NOT NULL,
-                    number      INT NOT NULL,
-                    title       TEXT NOT NULL,
-                    body        TEXT,
-                    state       TEXT NOT NULL,
-                    labels      TEXT[],
-                    created_at  TIMESTAMPTZ NOT NULL,
-                    closed_at   TIMESTAMPTZ
-                )
-            """)
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS classifications (
-                    id          SERIAL PRIMARY KEY,
-                    issue_id    INT NOT NULL REFERENCES issues(id) ON DELETE CASCADE,
-                    issue_type  TEXT NOT NULL,
-                    priority    TEXT NOT NULL,
-                    sentiment   TEXT NOT NULL,
-                    summary     TEXT NOT NULL
-                )
-            """)
-            cur.execute("""
-                CREATE INDEX IF NOT EXISTS idx_issues_run_id ON issues(run_id);
-                CREATE INDEX IF NOT EXISTS idx_classifications_issue_id ON classifications(issue_id);
-            """)
-        conn.commit()
+    # Schema is managed by Alembic migrations.
+    # Run `alembic upgrade head` from the project root before starting the app.
+    pass
 
 
 def create_run(repo: str) -> int:
