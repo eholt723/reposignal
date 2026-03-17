@@ -43,6 +43,7 @@ const HIGHLIGHTS = [
   'Repo history — previously analyzed repos saved to DB and reloadable with one click',
   'Dark/light mode persisted to localStorage with zero flash on load',
   'Full pytest suite — 3 unit modules (classifier, GitHub client, all 9 API routes) with all external calls mocked + end-to-end lifecycle integration test against real Groq and PostgreSQL',
+  'Alembic database migrations with versioned schema history; applied incrementally to live PostgreSQL without table recreation',
 ]
 
 const STACK = [
@@ -54,6 +55,7 @@ const STACK = [
   { name: 'PostgreSQL', role: 'Data persistence' },
   { name: 'GitHub REST API', role: 'Issue ingestion' },
   { name: 'Docker', role: 'Containerized deploy' },
+  { name: 'Alembic', role: 'Versioned database migrations' },
 ]
 
 export default function About() {
