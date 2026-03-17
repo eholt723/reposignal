@@ -42,6 +42,7 @@ const HIGHLIGHTS = [
   'Multi-stage Docker build: Node builds the React frontend, Python serves everything via FastAPI',
   'Repo history — previously analyzed repos saved to DB and reloadable with one click',
   'Dark/light mode persisted to localStorage with zero flash on load',
+  'Full pytest suite — 3 unit modules (classifier, GitHub client, all 9 API routes) with all external calls mocked + end-to-end lifecycle integration test against real Groq and PostgreSQL',
 ]
 
 const STACK = [

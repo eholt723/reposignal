@@ -7,6 +7,8 @@ sdk: docker
 pinned: false
 ---
 
+[![CI](https://github.com/eholt723/reposignal/actions/workflows/ci.yml/badge.svg)](https://github.com/eholt723/reposignal/actions/workflows/ci.yml)
+
 # RepoSignal
 
 AI-powered GitHub Issues analytics dashboard. Enter any public GitHub repository — RepoSignal fetches real issues via the GitHub REST API, classifies each one by type, priority, and sentiment using an LLM, persists results to PostgreSQL, and renders a live analytics dashboard. Select any open issue to stream an AI-drafted triage response word-by-word in real time.
