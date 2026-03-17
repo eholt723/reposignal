@@ -25,4 +25,6 @@ jobs:
           pip install -r backend/requirements.txt
 
       - name: Run unit tests
+        env:
+          GROQ_API_KEY: test-key-not-real
         run: pytest tests/unit/ -v
