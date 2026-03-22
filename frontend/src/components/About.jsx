@@ -33,6 +33,33 @@ const PIPELINE = [
   },
 ]
 
+const USE_CASES = [
+  {
+    title: 'Sprint Planning Prep',
+    desc: 'An engineering lead runs a quick analysis before Monday standup to answer "are we accumulating bugs or feature requests?" — without reading every ticket.',
+  },
+  {
+    title: 'Open-Source Triage',
+    desc: 'A solo maintainer handling 20+ weekly issues spots a surge in docs questions — a signal to prioritize documentation before triaging individual reports.',
+  },
+  {
+    title: 'Library Evaluation',
+    desc: 'Before adopting a dependency, a team checks the candidate library\'s open bug count, priority distribution, and issue resolution rate side-by-side with alternatives.',
+  },
+  {
+    title: 'Community Sentiment Monitoring',
+    desc: 'A developer relations team tracks whether issue sentiment is trending negative after a breaking API change — an early signal of developer friction before it hits forums.',
+  },
+  {
+    title: 'Maintenance Scoping',
+    desc: 'A consultant audits a client\'s issue backlog before signing a contract. Seeing 40% open high-priority bugs changes the scope conversation before work begins.',
+  },
+  {
+    title: 'Technical Due Diligence',
+    desc: 'A VC associate checks whether a startup\'s key open-source dependency has a growing backlog of unresolved bugs before a term sheet is signed.',
+  },
+]
+
 const HIGHLIGHTS = [
   'Full-stack Python + React application built from scratch with no starter templates',
   'LLM classification pipeline classifying each issue across four dimensions in parallel',
@@ -100,6 +127,25 @@ export default function About() {
                 <div className="font-semibold text-gray-800 dark:text-gray-200 mb-1">{stage.name}</div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{stage.desc}</p>
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Where This Gets Used */}
+      <section className="mb-12">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">Where This Gets Used</h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-5">
+          Most teams have no quick way to understand what their issue backlog is actually telling them. RepoSignal turns raw GitHub data into a readable signal — useful anywhere that a repo's health matters to a decision. Here's where it fits.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {USE_CASES.map((item) => (
+            <div
+              key={item.title}
+              className="bg-gray-800 border border-gray-700 rounded-xl p-4"
+            >
+              <div className="text-sm font-semibold text-gray-200 mb-1">{item.title}</div>
+              <p className="text-sm text-gray-400 leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>
