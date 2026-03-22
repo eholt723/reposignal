@@ -35,28 +35,28 @@ const PIPELINE = [
 
 const USE_CASES = [
   {
-    title: 'Sprint Planning Prep',
-    desc: 'An engineering lead runs a quick analysis before Monday standup to answer "are we accumulating bugs or feature requests?" — without reading every ticket.',
+    title: 'Customer Support Tickets',
+    desc: 'Zendesk, Intercom, Freshdesk — classify tickets by type and urgency, surface recurring themes, and stream AI-drafted first responses. Identical pipeline to this app, different data source.',
   },
   {
-    title: 'Open-Source Triage',
-    desc: 'A solo maintainer handling 20+ weekly issues spots a surge in docs questions — a signal to prioritize documentation before triaging individual reports.',
+    title: 'App Store & Product Reviews',
+    desc: 'iOS, Android, G2, Trustpilot — classify sentiment and theme (bug vs. feature vs. praise), track spikes over time, and flag product regressions before they compound in the ratings.',
   },
   {
-    title: 'Library Evaluation',
-    desc: 'Before adopting a dependency, a team checks the candidate library\'s open bug count, priority distribution, and issue resolution rate side-by-side with alternatives.',
+    title: 'Employee Feedback & Surveys',
+    desc: 'Open-ended HR survey responses: classify by theme and sentiment at scale, and surface what\'s actually bothering people — without reading 500 free-text answers by hand.',
   },
   {
-    title: 'Community Sentiment Monitoring',
-    desc: 'A developer relations team tracks whether issue sentiment is trending negative after a breaking API change — an early signal of developer friction before it hits forums.',
+    title: 'Sales CRM Notes',
+    desc: 'Deal notes, call summaries, and lost-deal reasons: classify by objection type, surface patterns across hundreds of deals, and draft tailored follow-up emails.',
   },
   {
-    title: 'Maintenance Scoping',
-    desc: 'A consultant audits a client\'s issue backlog before signing a contract. Seeing 40% open high-priority bugs changes the scope conversation before work begins.',
+    title: 'Internal IT Help Desk',
+    desc: 'Internal support tickets: classify, prioritize, and draft triage responses — the same architecture as this app, pointed at internal ops instead of a public repository.',
   },
   {
-    title: 'Technical Due Diligence',
-    desc: 'A VC associate checks whether a startup\'s key open-source dependency has a growing backlog of unresolved bugs before a term sheet is signed.',
+    title: 'Legal & Compliance Incidents',
+    desc: 'Classify incident reports by regulation type and severity, track resolution timelines, and surface which issue categories keep recurring across teams or quarters.',
   },
 ]
 
@@ -135,9 +135,10 @@ export default function About() {
       {/* Where This Gets Used */}
       <section className="mb-12">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">Where This Gets Used</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-5">
-          Most teams have no quick way to understand what their issue backlog is actually telling them. RepoSignal turns raw GitHub data into a readable signal — useful anywhere that a repo's health matters to a decision. Here's where it fits.
+        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+          GitHub Issues was chosen for this demo because the data is public, large-scale, and free — no scraping, no cost, no setup. But the underlying pipeline — ingest text records, classify with AI, aggregate with SQL, render a dashboard, stream a drafted response — works on any stream of text-based business data.
         </p>
+        <p className="text-sm text-cyan-500 italic mb-5">GitHub Issues is the data source for this demo. The pipeline generalizes to any of the following.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {USE_CASES.map((item) => (
             <div
