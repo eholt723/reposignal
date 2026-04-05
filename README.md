@@ -7,7 +7,7 @@ sdk: docker
 pinned: false
 ---
 
-[![CI](https://github.com/eholt723/reposignal/actions/workflows/ci.yml/badge.svg)](https://github.com/eholt723/reposignal/actions/workflows/ci.yml)
+[![CI/CD](https://github.com/eholt723/reposignal/actions/workflows/ci.yml/badge.svg)](https://github.com/eholt723/reposignal/actions/workflows/ci.yml)
 
 # RepoSignal
 
@@ -78,6 +78,10 @@ AI-powered GitHub Issues analytics dashboard. Enter any public GitHub repository
 - Filterable issue table by type and priority
 - AI-drafted triage response streamed live via SSE for any open issue
 - Repo history — previously analyzed repos saved to DB and re-loadable from the landing page
+
+## Deployment
+
+Every push to `main` runs the CI/CD pipeline via GitHub Actions. If all unit tests pass, the workflow automatically deploys to Hugging Face Spaces. The live app is available at [https://eholt723-reposignal.hf.space](https://eholt723-reposignal.hf.space).
 
 ## Local Development
 
@@ -192,15 +196,6 @@ alembic revision -m "describe the change"
 Then write the SQL changes in the generated file's `upgrade()` / `downgrade()` functions using `op.execute()`. This project uses raw psycopg2 rather than SQLAlchemy ORM, so `--autogenerate` is not available — migrations must be written manually.
 
 > Always review the generated migration file before running it against any database. Never run `alembic upgrade head` blindly against production.
-
-## Deployment
-
-Deployed to Hugging Face Spaces via Docker. Push to the `space` remote to deploy:
-
-```bash
-git remote add space https://huggingface.co/spaces/eholt723/RepoSignal
-git push space main
-```
 
 ## Design Decisions
 
