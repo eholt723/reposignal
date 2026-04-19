@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+psycopg2-binary
+groq>=1.0.0
+httpx
+python-dotenv
+pydantic
+sse-starlette
+pytest
+pytest-asyncio
+alembic
+sqlalchemy
+fastmcp>=2.0.0

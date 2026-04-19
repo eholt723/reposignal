@@ -16,6 +16,7 @@ from .database import (
 )
 from .github_client import fetch_issues
 from .classifier import classify_issue, stream_draft_response
+from .mcp_server import mcp
 
 
 @asynccontextmanager
@@ -25,6 +26,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="RepoSignal", lifespan=lifespan)
+app.mount("/mcp", mcp.sse_app())
 
 app.add_middleware(
     CORSMiddleware,
