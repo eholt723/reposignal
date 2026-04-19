@@ -28,7 +28,7 @@ def fetch_issues(repo: str, max_issues: int = 100) -> list[dict]:
     per_page = min(max_issues, 100)
     page = 1
 
-    with httpx.Client(headers=_headers(), timeout=30) as client:
+    with httpx.Client(headers=_headers(), timeout=30, follow_redirects=True) as client:
         while len(issues) < max_issues:
             resp = client.get(
                 f"{GITHUB_API}/repos/{repo}/issues",
