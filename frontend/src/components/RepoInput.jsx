@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const PRESETS = ['fastapi/fastapi', 'microsoft/vscode', 'vercel/next.js', 'golang/go', 'home-assistant/core']
+const PRESETS = ['fastapi/fastapi', 'jlowin/fastmcp', 'microsoft/vscode', 'vercel/next.js', 'golang/go', 'home-assistant/core']
 
 export default function RepoInput({ onAnalyze, onSelectHistory, onReset, hasResult, analyzing, error, hideHistory }) {
   const [value, setValue] = useState('')
