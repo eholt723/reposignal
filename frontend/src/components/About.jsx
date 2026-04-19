@@ -71,6 +71,7 @@ const HIGHLIGHTS = [
   'Dark/light mode persisted to localStorage with zero flash on load',
   'Full pytest suite — 3 unit modules (classifier, GitHub client, all 9 API routes) with all external calls mocked + end-to-end lifecycle integration test against real Groq and PostgreSQL',
   'Alembic database migrations with versioned schema history; applied incrementally to live PostgreSQL without table recreation',
+  'FastMCP server mounted at /mcp exposing 3 read-only SSE tools (list runs, get dashboard, get issues) — queryable by any MCP-compatible AI client',
 ]
 
 const STACK = [
@@ -83,6 +84,7 @@ const STACK = [
   { name: 'GitHub REST API', role: 'Issue ingestion' },
   { name: 'Docker', role: 'Containerized deploy' },
   { name: 'Alembic', role: 'Versioned database migrations' },
+  { name: 'FastMCP', role: 'MCP server (AI tool access)' },
 ]
 
 export default function About() {

@@ -16,21 +16,22 @@ AI-powered GitHub Issues analytics dashboard. Enter any public GitHub repository
 ## Architecture
 
 ```
-┌──────────────────────────────┐
-│       React Frontend         │
-│  Vite · Tailwind · Recharts  │
-└──────────────┬───────────────┘
-               │  REST  /api/*
-               │  SSE   /api/draft/{id}
-               ▼
-┌──────────────────────────────────────────┐
-│            FastAPI Backend               │
-│                                          │
-│  POST /api/analyze  ─── fetch + classify │
-│  GET  /api/dashboard/{id} ─── SQL aggs   │
-│  GET  /api/repos    ─── run history      │
-│  POST /api/draft/{id} ─── SSE stream     │
-└────────┬─────────────────────┬───────────┘
+┌──────────────────────────────┐   ┌─────────────────────┐
+│       React Frontend         │   │   MCP-compatible    │
+│  Vite · Tailwind · Recharts  │   │   AI client         │
+└──────────────┬───────────────┘   └──────────┬──────────┘
+               │  REST  /api/*                │  SSE  /mcp/sse
+               │  SSE   /api/draft/{id}       │
+               ▼                              ▼
+┌──────────────────────────────────────────────────────────┐
+│                    FastAPI Backend                       │
+│                                                          │
+│  POST /api/analyze  ─── fetch + classify                 │
+│  GET  /api/dashboard/{id} ─── SQL aggs                   │
+│  GET  /api/repos    ─── run history                      │
+│  POST /api/draft/{id} ─── SSE stream                     │
+│  GET  /mcp/sse      ─── FastMCP tool endpoint            │
+└────────┬─────────────────────┬───────────────────────────┘
          │                     │
          ▼                     ▼
 ┌─────────────────┐   ┌─────────────────────┐
@@ -56,6 +57,7 @@ AI-powered GitHub Issues analytics dashboard. Enter any public GitHub repository
 | Classifier | Sends each issue to Groq LLM; parses type, priority, sentiment, summary; parallelized with concurrency cap |
 | Database | psycopg2 raw SQL — persists runs, issues, classifications; powers all aggregation queries |
 | Draft panel | Streams an AI triage response word-by-word to the frontend via SSE |
+| MCP server | FastMCP mounted at `/mcp` — exposes `list_recent_runs`, `get_run_dashboard`, `get_run_issues` as SSE tools |
 | Migrations | Alembic tracks schema versions; migrations applied manually before deploy |
 
 ## Tech Stack
@@ -68,6 +70,7 @@ AI-powered GitHub Issues analytics dashboard. Enter any public GitHub repository
 | Database | PostgreSQL via Neon serverless — raw SQL with psycopg2 2.9.10 |
 | Real-time | Server-Sent Events via sse-starlette 2.1.3 |
 | Migrations | Alembic 1.14.1 with SQLAlchemy 2.0 engine |
+| MCP | FastMCP 2.2.0 + MCP 1.12.4 — SSE server mounted into FastAPI at `/mcp` |
 | Hosting | Hugging Face Spaces — multi-stage Docker (Node 20 build → Python 3.12 serve) |
 
 ## Features
@@ -78,6 +81,7 @@ AI-powered GitHub Issues analytics dashboard. Enter any public GitHub repository
 - Filterable issue table by type and priority
 - AI-drafted triage response streamed live via SSE for any open issue
 - Repo history — previously analyzed repos saved to DB and re-loadable from the landing page
+- FastMCP server at `/mcp/sse` — exposes repo analytics as MCP tools queryable by any MCP-compatible AI client (Claude, Cursor, etc.)
 
 ## Deployment
 
@@ -143,7 +147,9 @@ reposignal/
 │   ├── classifier.py        # Groq LLM classification pipeline (parallelized)
 │   ├── database.py          # psycopg2 connection, SQL query functions
 │   ├── models.py            # Pydantic request/response schemas
-│   └── requirements.txt
+│   ├── mcp_server.py        # FastMCP server — 3 read-only SSE tools
+│   ├── requirements.in      # pip-tools source — unpinned deps
+│   └── requirements.txt     # pip-compile output — fully pinned
 ├── frontend/
 │   └── src/
 │       ├── App.jsx                      # Router, layout, nav
